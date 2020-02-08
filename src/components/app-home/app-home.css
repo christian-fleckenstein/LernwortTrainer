@@ -2,15 +2,14 @@
   padding: 10px;
 }
 
-button {
-  background: #5851ff;
+button, input {
+  background: #3737b8;
   color: white;
   margin: 8px;
   border: none;
   font-size: 13px;
   font-weight: 700;
-  text-transform: uppercase;
-  padding: 16px 20px;
+  padding: 16px 5px;
   border-radius: 2px;
   box-shadow: 0 8px 16px rgba(0,0,0,.1), 0 3px 6px rgba(0,0,0,.08);
   outline: 0;
@@ -18,8 +17,24 @@ button {
   transition: all .15s ease;
   cursor: pointer;
 }
-  
-button:hover {
+ 
+textarea {
+  background: #ffffcc;
+  color: white;
+  margin: 8px;
+  border: none;
+  font-size: 13px;
+  font-weight: 700;
+  padding: 16px 5px;
+  border-radius: 2px;
+  box-shadow: 0 8px 16px rgba(0,0,0,.1), 0 3px 6px rgba(0,0,0,.08);
+  outline: 0;
+  letter-spacing: .04em;
+  transition: all .15s ease;
+  cursor: pointer;
+}
+
+button:hover, input:focus {
   box-shadow: 0 3px 6px rgba(0,0,0,.1), 0 1px 3px rgba(0,0,0,.1);
   transform: translateY(1px);
 }
@@ -33,11 +48,52 @@ header {
   box-shadow: 0 2px 5px 0 rgba(0, 0, 0, 0.26);
 }
 
+.richtig {
+  background: #ffff22;
+  color: black;
+  height: 56px;
+  display: flex;
+  align-items: center;
+  box-shadow: 0 2px 5px 0 rgba(0, 0, 0, 0.26);
+}
+
+
 h1 {
-  font-size: 1.4rem;
+  font-size: 1.7rem;
   font-weight: 500;
   color: #fff;
   padding: 0 12px;
 }
 
+p {
+  font-size: 1.7rem;
+  font-weight: 500;
+  color: #000000;
+  padding: 0 12px;
+}
 
+label  {
+  font-size: 1.7rem;
+  font-weight: 500;
+  color: #000000;
+  padding: 16 12px;
+
+}
+
+textarea  {
+  font-size: 1.7rem;
+  font-weight: 500;
+  color: #000000;
+  padding: 16 12px;
+
+}
+
+input  {
+  font-size: 1.7rem;
+  font-weight: 500;
+  color: #000000;
+  background: #ffffaa;
+  padding: 16 px;
+  border: none;
+
+}

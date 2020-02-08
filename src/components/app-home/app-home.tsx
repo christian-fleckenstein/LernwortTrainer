@@ -8,21 +8,23 @@ import { Component, h, State } from '@stencil/core';
 export class AppHome {
 
   @State() zielWert: number = 3;
+  @State() toggle: number = 0;
 
-  @State() wortEingabe: string;
+  @State() eingabeWortliste: string;
 
   @State() wortListe: any[] = [];
   @State() abfrageListe: any[] = [];
 
-  @State() eingabeTest: string;
-  @State() vorherigeEingabeTest: string = "";
-  @State() wortAnzeigen: boolean = false;
-
+  @State() eingabeJetzt: string;
+  @State() eingabeDavor: string = "";
+  @State() loesungAnzeigen: boolean = false;
+  @State() vorherigesloesungAnzeigen: boolean = false;
+  
   @State() synth = window.speechSynthesis;
   @State() voices = [];
   @State() currentVoice = 0;
 
-  wortlisteNeuAufbauen() {
+  abfrageListeNeuAufbauen() {
     var schlechteste = this.zielWert;
     this.wortListe.map((wort) => {
       if (wort.richtig < schlechteste) {
@@ -80,15 +82,15 @@ export class AppHome {
     this.zielWert = event.target.value;
   }
 
-  woertGeaendert(event) {
-    this.wortEingabe = event.target.value;
+  woertListeGeaendert(event) {
+    this.eingabeWortliste = event.target.value;
   }
 
   woerterUebernehmen(event) {
     event.preventDefault();
-    if (this.wortEingabe === undefined) return -1;
+    if (this.eingabeWortliste === undefined) return -1;
 
-    var tmpWoerter = this.wortEingabe.split("\n");
+    var tmpWoerter = this.eingabeWortliste.split("\n");
     this.wortListe = [];
     for (const [index, value] of tmpWoerter.entries()) {
       var antwort = value.trim();
@@ -105,47 +107,58 @@ export class AppHome {
     }
 
     // Abfrageliste neu aufbauen
-    this.wortlisteNeuAufbauen();
+    this.abfrageListeNeuAufbauen();
     this.vorlesen(this.abfrageListe[0].wort, false);
 
   }
 
 eingabeAbgeben(event) {
   event.preventDefault();
-  if (this.vorherigeEingabeTest == "" || this.eingabeTest == "" || this.vorherigeEingabeTest != this.eingabeTest) {
-    if (this.abfrageListe.length > 0)
-      this.vorlesen(this.abfrageListe[0].wort, false);
-    this.vorherigeEingabeTest = this.eingabeTest;
+  // three options:
+  // No input yet: Say word
+  // With input, first submit: say word
+  // With input, 2nd submit: show word, reset counter
+
+  // Always vorlesen
+  if (this.abfrageListe.length > 0)
+  this.vorlesen(this.abfrageListe[0].wort, false);
+  if (this.eingabeDavor == "" ||  this.eingabeDavor != this.eingabeJetzt) {
+      this.eingabeDavor = this.eingabeJetzt;
+
   } else {
-    this.wortAnzeigen = true;
-    this.abfrageListe[0].richtig = 0;
+    // Show word only if 2x enter after entering something
+      this.loesungAnzeigen = true;
+      this.abfrageListe[0].richtig = 0;
   }
 }
 
 eingabeEingeben(event) {
-  this.eingabeTest = event.target.value;
+  this.eingabeJetzt = event.target.value;
+  this.loesungAnzeigen = false;
+  this.vorherigesloesungAnzeigen = false;
 
-  if (this.abfrageListe[0].antwort == this.eingabeTest) {
+  if (this.abfrageListe[0].antwort == this.eingabeJetzt) {
     this.vorlesen("richtig!", false);
-    this.eingabeTest = "";
+    this.eingabeDavor = this.eingabeJetzt;
+    this.eingabeJetzt = "";
     this.abfrageListe[0].richtig++;
     this.abfrageListe.shift();
-    this.vorherigeEingabeTest = "";
-    this.wortAnzeigen = false;
-    if (this.abfrageListe.length == 0) this.wortlisteNeuAufbauen();
+    this.vorherigesloesungAnzeigen = true;
+    if (this.abfrageListe.length == 0) this.abfrageListeNeuAufbauen();
     if (this.abfrageListe.length > 0) this.vorlesen(this.abfrageListe[0].wort, false);
-  }
+  } 
+
   return -1;
 }
 
 render() {
+  this.toggle = 1 - this.toggle;
   //Eingabe der abzufragenden Wörter:
   if (this.wortListe.length == 0) {
     return (
       <div class='app-home'>
         <header>
-          <h1>Lernwort Quiz</h1>
-          <button onClick={() => this.vorlesen("Hallo, verstehst Du mich gut?", true)}>Stimme wechseln!</button>
+          <h1>Lernwort Quiz</h1><button onClick={() => this.vorlesen("Hallo, verstehst Du mich gut?", true)}>Stimme wechseln!</button>
         </header>
         <p>
           Bitte hier eine die abzufragenden Wörter eingeben.
@@ -161,13 +174,13 @@ render() {
         </datalist>
         <form onSubmit={(e) => this.woerterUebernehmen(e)}>
           <label>Benötigte richtige Antworten:
-              <input type="number" width={3} min={1} max={5} value={this.zielWert} list={"1bis5"} size={1}
+              <input type="number" width={1} min={1} max={5} value={this.zielWert} list={"1bis5"} size={1}
               onInput={(event) => this.zielwertGeaendert(event)} />
           </label>
           <br />
-          <textarea onInput={(event) => this.woertGeaendert(event)} cols={30} rows={20} minlength={10} spellcheck={true} />
+          <textarea onInput={(event) => this.woertListeGeaendert(event)} cols={30} rows={10} minlength={5+this.toggle} spellcheck={true} autoFocus={true}/>
           <br />
-          <input type="Submit" value="Übernehmen" />
+          <input type="Submit" value="Übernehmen" />          
         </form>
 
       </div>
@@ -183,17 +196,10 @@ render() {
         <p>
           <div>
             <form onSubmit={(e) => this.eingabeAbgeben(e)}>
-              <label>Antwort:
-              <input type="text" width={20} value={this.eingabeTest} autoFocus={true}
+              <p>Antwort:
+              <input type="text" width={20} value={this.eingabeJetzt} autoFocus={true} minLength = {this.toggle *0}
                   onInput={(event) => this.eingabeEingeben(event)} />
-              </label>
-              <br />
-              <p>
-                <input type="Submit" value="Anhören / Lösung anzeigen" />
-              </p>
-              <div hidden={!this.wortAnzeigen}>
-                {this.abfrageListe[0].antwort}
-              </div>
+              {(!this.loesungAnzeigen  && !this.vorherigesloesungAnzeigen)?"":(this.loesungAnzeigen?this.abfrageListe[0].antwort:""+this.vorherigesloesungAnzeigen?this.eingabeDavor:"")}</p>
             </form>
           </div>
           </p>
@@ -208,7 +214,7 @@ render() {
           <h1>Lernwort Quiz</h1>
         </header>
           <div>
-            <p>
+            <p class="richtig">
               Geschafft!
             </p>
           </div>
