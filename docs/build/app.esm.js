@@ -1,1 +1,1 @@
-import{p as e,b as t}from"./p-6da8d263.js";e().then(e=>t([["p-nt3b2f3o",[[1,"app-home",{zielWert:[32],wortEingabe:[32],wortListe:[32],abfrageListe:[32],eingabeTest:[32],vorherigeEingabeTest:[32],wortAnzeigen:[32],synth:[32],voices:[32],currentVoice:[32]}]]]],e));
+import{p as e,b as i}from"./p-6da8d263.js";e().then(e=>i([["p-m5afxxug",[[1,"app-home",{zielWert:[32],toggle:[32],eingabeWortliste:[32],wortListe:[32],abfrageListe:[32],eingabeJetzt:[32],eingabeDavor:[32],loesungAnzeigen:[32],vorherigesloesungAnzeigen:[32],synth:[32],voices:[32],currentVoice:[32]}]]]],e));
